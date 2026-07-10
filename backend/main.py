@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -29,9 +31,13 @@ from chat import run_chat, build_greeting
 
 app = FastAPI(title="Aadhya API")
 
+# CORS_ORIGINS: comma-separated list of allowed origins (set the deployed
+# frontend's URL here on Render). Defaults to localhost for local dev.
+_cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
