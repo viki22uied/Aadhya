@@ -8,6 +8,18 @@ import { useLanguage } from "./components/LanguageContext";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+// Judges land on an empty chat with no idea what it can do — these are
+// real prompts the backend tool-calling handles, shown as clickable chips
+// so there's a script to follow instead of guessing free text.
+const EXAMPLE_PROMPTS = [
+  "Show my FDs",
+  "What's my gold worth?",
+  "Buy ₹50 of gold",
+  "What's my loan offer?",
+  "Show my allocation",
+  "What if the market drops 20%?",
+];
+
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -130,6 +142,21 @@ export default function Chat() {
           {sending && <p className="text-xs text-zinc-500 dark:text-zinc-400">Aadhya is thinking...</p>}
           <div ref={bottomRef} />
         </div>
+
+        {messages.length <= 1 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {EXAMPLE_PROMPTS.map((p) => (
+              <button
+                key={p}
+                onClick={() => send(p)}
+                disabled={sending}
+                className="rounded-full border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs text-violet-800 hover:bg-violet-100 disabled:opacity-50 dark:border-violet-800 dark:bg-violet-950/30 dark:text-violet-200 dark:hover:bg-violet-900/40"
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="mt-4 flex gap-2">
           <MicButton onResult={(transcript) => send(transcript)} />
