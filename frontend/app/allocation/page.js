@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AadhyaSays, InfoDisclosure } from "../components/Aadhya";
+import { AadhyaSays, InfoDisclosure, TutorialTip } from "../components/Aadhya";
 import { ShareButton } from "../components/ShareButton";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -31,9 +31,9 @@ export default function Allocation() {
     const r = await fetch(`${API}/demo/trigger-downturn`, { method: "POST" });
     const d = await r.json();
     setDemoMsg(
-      d.equity_amount_before !== undefined
+      d.equity_amount_before > 0
         ? `Downturn queued: ${inr(d.equity_amount_before)} → ${inr(d.equity_amount_after)}. Open Chat to see Aadhya lead with it.`
-        : "No equity allocation yet to simulate a downturn on."
+        : "No equity allocation yet — buy gold 3+ times first (Chat → \"Buy ₹50 of gold\") to unlock equity, then try this again."
     );
   };
 
@@ -49,7 +49,12 @@ export default function Allocation() {
     <div className="min-h-screen bg-zinc-50 px-6 py-12 font-sans dark:bg-black">
       <div className="mx-auto max-w-2xl">
         <h1 className="text-2xl font-semibold text-black dark:text-zinc-50">
-          Here&apos;s how I&apos;d split your {inr(data.total_holdings)}
+          Here&apos;s how I&apos;d split your {inr(data.total_holdings)}{" "}
+          <TutorialTip>
+            This split starts 100% FDs/gold — equity only unlocks once you&apos;ve bought gold 3+ times
+            (Chat → &quot;Buy ₹50 of gold&quot;, repeat 3x). That&apos;s a deliberate rule: never open a new
+            user with market-linked risk.
+          </TutorialTip>
         </h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
           Based on what you already hold — not a generic model portfolio.
@@ -111,7 +116,15 @@ export default function Allocation() {
         <ShareButton endpoint="/me/share/allocation" label="Share with family" />
 
         <div className="mt-8 rounded-xl border border-dashed border-zinc-300 p-4 dark:border-zinc-700">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Demo controls (judges only)</p>
+          <p className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            Demo controls (judges only)
+            <TutorialTip>
+              Suggested judge script: 1) Chat → click &quot;Buy ₹50 of gold&quot; three times to unlock
+              equity. 2) Come back here and hit &quot;Simulate downturn&quot;. 3) Open Chat again — Aadhya
+              leads with the crash alert unprompted. 4) &quot;Reset conversation sequence&quot; replays the
+              whole thing from scratch for the next judge.
+            </TutorialTip>
+          </p>
           <div className="mt-2 flex gap-2">
             <button
               onClick={triggerDownturn}
@@ -119,12 +132,20 @@ export default function Allocation() {
             >
               Simulate 2020-style downturn
             </button>
+            <TutorialTip>
+              Applies the real 2020 Nifty 50 crash (-39.2%) to your current equity allocation, then queues
+              an alert so Aadhya opens the next chat with it. Needs equity &gt; 0 first (see tip above).
+            </TutorialTip>
             <button
               onClick={resetChat}
               className="rounded-full border border-zinc-300 px-3 py-1.5 text-xs text-black hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-800"
             >
               Reset conversation sequence
             </button>
+            <TutorialTip>
+              Wipes this demo user&apos;s chat progress so the next Chat visit starts over from the FD
+              intro — useful for re-running the walkthrough for a new judge.
+            </TutorialTip>
           </div>
           {demoMsg && <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">{demoMsg}</p>}
         </div>

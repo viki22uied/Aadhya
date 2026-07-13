@@ -89,3 +89,19 @@ export function InfoDisclosure({ summary, children }) {
     </details>
   );
 }
+
+// Judges land on this app cold with no walkthrough — a small "?" badge next
+// to any non-obvious action that pops its explanation open right there,
+// instead of a separate onboarding doc nobody reads before clicking around.
+export function TutorialTip({ children }) {
+  return (
+    <details className="group relative inline-block align-middle">
+      <summary className="inline-flex h-5 w-5 cursor-pointer select-none list-none items-center justify-center rounded-full border border-violet-400 text-[11px] font-semibold text-violet-600 hover:bg-violet-50 dark:border-violet-600 dark:text-violet-300 dark:hover:bg-violet-950/40">
+        ?
+      </summary>
+      <div className="absolute z-20 mt-2 w-64 rounded-lg border border-violet-300 bg-white p-3 text-xs leading-relaxed text-zinc-700 shadow-lg dark:border-violet-700 dark:bg-zinc-900 dark:text-zinc-300">
+        {children}
+      </div>
+    </details>
+  );
+}

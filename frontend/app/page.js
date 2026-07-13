@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { AadhyaAvatar } from "./components/Aadhya";
+import { AadhyaAvatar, TutorialTip } from "./components/Aadhya";
 import { ToolResultCard } from "./components/ToolCards";
 import { MicButton } from "./components/MicButton";
 import { useLanguage } from "./components/LanguageContext";
@@ -115,6 +115,21 @@ export default function Chat() {
         {lang === "hi" && hindiError && (
           <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
             Couldn&apos;t reach the Hindi translation service right now — showing English.
+          </div>
+        )}
+
+        {messages.length <= 1 && (
+          <div className="mb-4 flex items-start gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-800 dark:border-violet-800 dark:bg-violet-950/30 dark:text-violet-200">
+            <span>
+              New here? Tap a suggestion below to try the chat, or an FD card&apos;s summary to expand its
+              details. Every &quot;?&quot; badge across the app (like this one) explains what that control does.
+            </span>
+            <TutorialTip>
+              This is a bank-advisor chatbot demo. Aadhya opens with a scripted intro (FDs → post-tax
+              reality → gold), then free chat unlocks. Try the example prompts below, or visit
+              /allocation for the portfolio split + judge demo controls (simulate a market crash, reset
+              the conversation).
+            </TutorialTip>
           </div>
         )}
 
