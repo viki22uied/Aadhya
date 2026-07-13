@@ -22,20 +22,38 @@ export function ToolResultCard({ name, result }) {
     return (
       <div className="mt-2 space-y-2">
         {result.fixed_deposits.map((fd) => (
-          <div
+          <details
             key={fd.id}
-            className="rounded-lg border border-zinc-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900"
+            className="group rounded-lg border border-zinc-200 bg-white p-3 text-sm open:ring-1 open:ring-violet-300 dark:border-zinc-800 dark:bg-zinc-900"
           >
-            <div className="flex items-baseline justify-between">
-              <span className="text-black dark:text-zinc-50">
-                FD #{fd.id}: {inr(fd.principal)} at {fd.interest_rate_percent}%
-              </span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">matures {fd.maturity_date}</span>
+            <summary className="cursor-pointer select-none list-none">
+              <div className="flex items-baseline justify-between">
+                <span className="text-black dark:text-zinc-50">
+                  FD #{fd.id}: {inr(fd.principal)} at {fd.interest_rate_percent}%
+                </span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">matures {fd.maturity_date}</span>
+              </div>
+              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                Worth today: {inr(fd.current_value)} · At maturity: {inr(fd.maturity_value)}
+                <span className="ml-1 text-violet-600 group-open:hidden dark:text-violet-400">— tap for details</span>
+              </p>
+            </summary>
+            <div className="mt-2 space-y-1 border-t border-zinc-100 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+              <p>
+                Post-tax, inflation-adjusted: {inr(fd.post_tax_reality.inflation_adjusted_value)} real gain{" "}
+                {inr(fd.post_tax_reality.real_gain)} ({fd.post_tax_reality.real_annual_yield_percent}%/yr)
+              </p>
+              <p>
+                Tax deducted: {inr(fd.post_tax_reality.tax_deducted)} · CPI assumption:{" "}
+                {fd.post_tax_reality.cpi_yoy_assumption_percent}%
+              </p>
+              <p>
+                Loan against this FD: up to {inr(fd.loan_offer.max_loan_amount)} at{" "}
+                {fd.loan_offer.interest_rate_min_percent}%–{fd.loan_offer.interest_rate_max_percent}%
+              </p>
+              {fd.goal_name && <p>Tagged to goal: {fd.goal_name}</p>}
             </div>
-            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-              Worth today: {inr(fd.current_value)} · At maturity: {inr(fd.maturity_value)}
-            </p>
-          </div>
+          </details>
         ))}
       </div>
     );
