@@ -1,7 +1,5 @@
 """LLM orchestration stub. Both Groq and Ollama expose an OpenAI-compatible
 API, so one client covers either backend via env vars.
-
-ponytail: no tools registered yet — wire in rule-function tools per PRD feature list once scope is confirmed.
 """
 import os
 from dotenv import load_dotenv
@@ -19,4 +17,9 @@ MODEL = os.getenv("LLM_MODEL", "llama3.1")
 
 
 def chat(messages: list[dict], tools: list[dict] | None = None):
-    return client.chat.completions.create(model=MODEL, messages=messages, tools=tools)
+    # tool_choice="auto" is the OpenAI-spec default when tools are passed, but
+    # some OpenAI-compatible backends (small Groq models especially) skip real
+    # tool-calling and instead write fake tool-call syntax into plain text
+    # unless this is explicit.
+    kwargs = {"tool_choice": "auto"} if tools else {}
+    return client.chat.completions.create(model=MODEL, messages=messages, tools=tools, **kwargs)

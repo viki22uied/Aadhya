@@ -148,6 +148,16 @@ GATED_TOOLS = {"get_allocation", "get_risk_scenario"}
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
 _MAX_COMMAS_PER_SENTENCE = 2
 
+# Small/fast tool-calling models occasionally write their tool call as plain
+# text (e.g. "get_fd_snapshot</function>") instead of using the real
+# tool-calling mechanism. Never show that leaked syntax to the user — treat
+# it as a malformed reply, same honesty contract as llm_unavailable.
+_LEAKED_TOOL_SYNTAX = re.compile(r"</?function>|<\|python_tag\|>|^\{\"name\":\s*\"[a-z_]+\"")
+
+
+def _looks_like_leaked_tool_call(text: str) -> bool:
+    return bool(text) and bool(_LEAKED_TOOL_SYNTAX.search(text))
+
 
 def _shorten_comma_heavy(sentence: str) -> tuple[str, bool]:
     """A single grammatical sentence can still be a wall of stacked clauses
@@ -264,6 +274,13 @@ def run_chat(history: list[dict], user_id: int = DEMO_USER_ID) -> dict:
                 "detail": str(e),
             }
         message = response.choices[0].message
+
+    if _looks_like_leaked_tool_call(message.content):
+        return {
+            "reply": ["Sorry, I got confused answering that one.", "Could you ask again, maybe a bit differently?"],
+            "tool_calls": executed_tool_calls,
+            "error": None,
+        }
 
     return {"reply": enforce_brevity(message.content), "tool_calls": executed_tool_calls, "error": None}
 
