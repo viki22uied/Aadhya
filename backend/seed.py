@@ -4,11 +4,12 @@ ponytail: single hardcoded demo user (id=1), stub-auth means no multi-user login
 import random
 from datetime import date, timedelta
 
-from faker import Faker
-
 from db import get_conn, init_db
 
-fake = Faker("en_IN")
+DEMO_NAMES = [
+    "Aarav Sharma", "Priya Patel", "Rohan Iyer", "Ananya Reddy", "Vikram Nair",
+    "Sneha Gupta", "Arjun Menon", "Kavya Rao", "Rahul Verma", "Divya Krishnan",
+]
 
 
 def seed():
@@ -21,7 +22,7 @@ def seed():
     cur = conn.execute(
         "INSERT INTO users (name, tax_slab_percent, age, risk_appetite, goal, horizon_years) VALUES (?, ?, ?, ?, ?, ?)",
         (
-            fake.name(),
+            random.choice(DEMO_NAMES),
             random.choice([0, 5, 20, 30]),
             random.randint(25, 60),
             random.choice(["conservative", "moderate", "growth"]),

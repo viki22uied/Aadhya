@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react";
 import { AadhyaSays, InfoDisclosure, TutorialTip } from "../components/Aadhya";
 import { ShareButton } from "../components/ShareButton";
+import { inr } from "../lib/format";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-const inr = (n) =>
-  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 const ASSET_LABELS = {
   fd_debt: "FDs & Savings",
